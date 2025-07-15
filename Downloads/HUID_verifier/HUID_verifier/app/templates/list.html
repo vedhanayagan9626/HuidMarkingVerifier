@@ -1,0 +1,370 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+/* Modern Table Styling with Fixed Header */
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.table-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+}
+
+.table {
+    margin-bottom: 0;
+    width: 100%;
+    table-layout: auto;
+    table-layout: fixed; /* Ensures consistent column widths */
+}
+
+.table thead th {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    padding: 8px 12px;
+    border: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.table td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    border-top: 1px solid #f1f1f1;
+    text-align: center;
+    word-wrap: break-word; /* Ensures content stays within cell */
+}
+
+/* Set specific column widths */
+.table th:nth-child(1), .table td:nth-child(1) { width: 5%; min-width: 40px; } /* SL No */
+.table th:nth-child(2), .table td:nth-child(2) { width: 8%; min-width: 120px; } /* Date */
+.table th:nth-child(3), .table td:nth-child(3) { width: 8%; min-width: 80px; } /* Job No */
+.table th:nth-child(4), .table td:nth-child(4) { width: 8%; min-width: 80px; } /* Item Code */
+.table th:nth-child(5), .table td:nth-child(5) { width: 10%; min-width: 100px; } /* Actual HUID */
+.table th:nth-child(6), .table td:nth-child(6) { width: 10%; min-width: 100px; } /* OCR HUID */
+.table th:nth-child(7), .table td:nth-child(7) { width: 6%; min-width: 60px; } /* Weight */
+.table th:nth-child(8), .table td:nth-child(8) { width: 10%; min-width: 100px; } /* Verification */
+.table th:nth-child(9), .table td:nth-child(9) { width: 14%; min-width: 100px; } /* Status */
+.table th:nth-child(10), .table td:nth-child(10) { width: 8%; min-width: 80px; } /* Stage-1 Image */
+.table th:nth-child(11), .table td:nth-child(11) { width: 8%; min-width: 80px; } /* QC Image */
+.table th:nth-child(12), .table td:nth-child(12) { width: 8%; min-width: 80px; } /* Weighing Image */
+
+/* Status Tags */
+.ant-tag-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ant-tag {
+    display: inline-block;
+    height: auto;
+    margin: 0;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    white-space: nowrap;
+    background: #fafafa;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    opacity: 1;
+    transition: all 0.3s;
+    cursor: default;
+}
+
+.ant-tag-green {
+    color: #52c41a;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+}
+
+.ant-tag-red {
+    color: #ff4d4f;
+    background: #fff2f0;
+    border-color: #ffccc7;
+}
+
+.ant-tag-blue {
+    color: #1890ff;
+    background: #e6f7ff;
+    border-color: #91d5ff;
+}
+
+.ant-tag-orange {
+    color: #fa8c16;
+    background: #fff7e6;
+    border-color: #ffd591;
+}
+
+/* Image Cells */
+.table img {
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    max-width: 60px;
+    max-height: 60px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Search Box Styling */
+.search-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    outline: none;
+}
+
+.search-btn {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-btn:hover {
+    background-color: #4f46e5;
+}
+
+/* Header Styling */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.page-title {
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .table-wrapper {
+        overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+    }
+    
+    .table th, .table td {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+    
+    .table img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        flex-direction: column;
+    }
+    
+    .table th, .table td {
+        font-size: 12px;
+        padding: 4px 6px;
+    }
+    .ant-tag {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+}
+
+</style>
+
+<div class="container-fluid pt-1 mt-3 ">
+    <div class="page-header">
+        <h3 class="page-title">HUID Capture Records</h3>
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="jobNoSearch" placeholder="Search by Job Number...">
+            </div>
+            <div class="search-box">
+                <input type="text" id="itemCodeSearch" placeholder="Search by Item Code...">
+            </div>
+            <button class="search-btn" onclick="filterTable()">
+                <i class="bi bi-search me-1"></i> Search
+            </button>
+            <button class="btn btn-primary action-btn" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-wrapper">
+        <table class="table table-hover" id="recordsTable">
+            <thead>
+                <tr>
+                    <th>SL No</th>
+                    <th>Date</th>
+                    <th>Job No</th>
+                    <th>Item Code</th>
+                    <th>Actual HUID</th>
+                    <th>OCR HUID</th>
+                    <th>Weight</th>
+                    <th>Verification</th>
+                    <th>Status</th>
+                    <th>Stage-1 Image</th>
+                    <th>QC Image</th>
+                    <th>Weighing Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ record.date_created.strftime('%Y-%m-%d %H:%M') if record.date_created else '' }}</td>
+                    <td>{{ record.job_no }}</td>
+                    <td>{{ record.itemcode }}</td>
+                    <td>{{ record.actual_huid }}</td>
+                    <td>{{ record.ocr_huid }}</td>
+                    <td>{{ "%.2f"|format(record.weight) if record.weight else '' }}</td>
+                    <td>
+                        {% if record.verification %}
+                            <span class="ant-tag {% if record.verification == 'matched' %}ant-tag-green{% elif record.verification == 'mismatched' %}ant-tag-red{% elif record.verification == 'pending' %}ant-tag-blue{% else %}ant-tag-orange{% endif %}">
+                                {{ record.verification|upper }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="ant-tag-container">
+                            <span class="ant-tag {% if record.stage1_image %}ant-tag-green{% else %}ant-tag-red{% endif %}">Stage-1</span>
+                            <span class="ant-tag {% if record.qc_image %}ant-tag-green{% else %}ant-tag-red{% endif %}">QC</span>
+                            <span class="ant-tag {% if record.weighing_image %}ant-tag-green{% else %}ant-tag-red{% endif %}">Weighing</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if record.stage1_image %}
+                            <img src="data:image/jpeg;base64,{{ record.stage1_image | b64encode }}" 
+                                onclick="showImageModal('data:image/jpeg;base64,{{ record.stage1_image | b64encode }}')" />
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if record.qc_image %}
+                            <img src="data:image/jpeg;base64,{{ record.qc_image | b64encode }}" 
+                                onclick="showImageModal('data:image/jpeg;base64,{{ record.qc_image | b64encode }}')" />
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if record.weighing_image %}
+                            <img src="data:image/jpeg;base64,{{ record.weighing_image | b64encode }}" 
+                                onclick="showImageModal('data:image/jpeg;base64,{{ record.weighing_image | b64encode }}')" />
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content p-2">
+      <button type="button" class="btn-close ms-auto me-1 mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-body text-center p-2">
+        <img id="modalImage" src="" class="img-fluid rounded" alt="Preview" style="max-height: 80vh;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Filter table by Job No and Item Code
+function filterTable() {
+    const jobNoValue = document.getElementById('jobNoSearch').value.toLowerCase();
+    const itemCodeValue = document.getElementById('itemCodeSearch').value.toLowerCase();
+    const table = document.getElementById('recordsTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const jobNoCell = rows[i].cells[2].textContent.toLowerCase();
+        const itemCodeCell = rows[i].cells[3].textContent.toLowerCase();
+        
+        const jobNoMatch = jobNoValue === '' || jobNoCell.includes(jobNoValue);
+        const itemCodeMatch = itemCodeValue === '' || itemCodeCell.includes(itemCodeValue);
+        
+        rows[i].style.display = (jobNoMatch && itemCodeMatch) ? '' : 'none';
+    }
+}
+
+// Image modal function
+function showImageModal(src) {
+    const modalImg = document.getElementById('modalImage');
+    modalImg.src = src;
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
+
+// Refresh data function
+function refreshData() {
+    window.location.reload();
+}
+
+// Enable search on Enter key
+document.getElementById('jobNoSearch').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') filterTable();
+});
+
+document.getElementById('itemCodeSearch').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') filterTable();
+});
+</script>
+{% endblock %}

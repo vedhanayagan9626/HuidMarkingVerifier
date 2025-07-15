@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-fluid mt-4 pt-3">
+  <h3 class="mb-3 text-primary text-center">Import LotID from Excel</h3>
+  <p class="mb-4 text-center">Upload an Excel file to import tag IDs to the system.</p>
+
+  <form id="uploadForm" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
+      <div class="mb-3 w-100" style="max-width: 400px;">
+          <label for="file" class="form-label w-100 text-center">Choose Excel File</label>
+          <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls, .csv" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+
+  <div id="uploadResult" class="mt-3 text-center"></div>
+</div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('file');
+    const resultDiv = document.getElementById('uploadResult');
+    resultDiv.innerHTML = '';
+
+    if (!fileInput.files.length) {
+        resultDiv.innerHTML = `<div class="alert alert-warning">Please choose a file!</div>`;
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const allowedExtensions = ['.xlsx', '.xls', '.csv'];
+    const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExt)) {
+        resultDiv.innerHTML = `<div class="alert alert-warning">Invalid file type. Only Excel files (.xlsx, .xls) are allowed.</div>`;
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    resultDiv.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Uploading...</span>
+        </div> Uploading... Please wait
+    `;
+
+    try {
+        const response = await fetch('/upload_excel', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
+        if (data.success) {
+            resultDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+            fileInput.value = '';
+        } else {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error || 'Upload failed'}</div>`;
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+    }
+});
+</script>
+{% endblock %}

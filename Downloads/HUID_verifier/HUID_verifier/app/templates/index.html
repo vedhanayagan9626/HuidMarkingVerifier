@@ -1,0 +1,459 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+/* Modern badge colors with better contrast */
+.badge-before { background-color: #0d6efd; color: white; }
+.badge-after { background-color: #198754; color: white; }
+.badge-weighing { background-color: #ffc107; color: #212529; }
+
+/* Enhanced card styling */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    height: 100%;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: rgba(0,0,0,0.03);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 12px 16px;
+}
+
+.card-body {
+    padding: 16px;
+}
+
+h5, h6 {
+    font-weight: 600;
+}
+
+/* Improved button styling */
+.btn {
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-width: 1px;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Three-column layout with better spacing */
+.three-column-layout {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.left-panel {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.center-panel {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Enhanced form controls */
+.form-select, .form-control {
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #495057;
+}
+
+/* Camera and canvas styling */
+.camera-container {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px dashed #dee2e6;
+}
+
+/* Preview card enhancements */
+.preview-container {
+    text-align: center;
+}
+
+.preview-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.preview-card img {
+    max-height: 300px;
+    width: auto;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    object-fit: contain;
+    background-color: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Stage indicator in card header */
+.card-header .badge {
+    float: right;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    font-weight: 600;
+}
+
+/* Camera select styling */
+#cameraSelect {
+    max-width: 250px;
+    display: inline-block;
+}
+
+/* Top header improvements */
+.row.align-items-center {
+    padding: 16px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+}
+
+/* Badge enhancements */
+.badge {
+    padding: 6px 12px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.bg-success {
+    background-color: #198754 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+/* OCR Results section */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-radius: 8px;
+    padding: 16px !important;
+}
+
+#unique_number, #actual_huid {
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Image upload section */
+#upload-image {
+    display: none;
+}
+
+/* No preview placeholder */
+#no-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Toast notifications */
+.toast {
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.3s ease-in;
+    max-width: 300px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.toast i {
+    font-size: 1.2rem;
+}
+
+.toast.loading {
+    background: linear-gradient(135deg, #3498db, #2c7be5);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #2ecc71, #27b360);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #e74c3c, #d62c1a);
+}
+.swal-wide {
+    width: 600px !important;
+    max-width: 80%;
+}
+/* Progress bar */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    height: 8px !important;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: #0d6efd;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .three-column-layout {
+        flex-direction: column;
+    }
+    
+    .left-panel, .center-panel, .right-panel {
+        flex: 1;
+        width: 100%;
+    }
+}
+
+/* Hover effects for interactive elements */
+button:not(:disabled), select, .preview-card {
+    cursor: pointer;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+/* Focus states for accessibility */
+button:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+.badge.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+.badge.bg-secondary.bg-opacity-10 {
+    background-color: rgba(108, 117, 125, 0.1);
+}
+</style>
+
+<div class="row align-items-center mb-4 mt-4">
+  <!-- Left Side - Stage and Counts -->
+  <div class="col-md-6 d-flex align-items-center">
+    <div class="d-flex align-items-center me-4">
+      <h5 class="mb-0 me-2">Current Stage:</h5>
+      <span id="stage-label" class="badge bg-primary px-3 py-2 fs-6">Stage-1</span>
+    </div>
+    <div class="d-flex">
+      <span class="badge bg-warning text-dark px-3 py-2 me-2">
+        <i class="bi bi-hourglass-split me-1"></i>Pending: <span id="pending_count">0</span>
+      </span> 
+      <span class="badge bg-success px-3 py-2 me-2">
+        <i class="bi bi-check-circle me-1"></i>Completed: <span id="completed_count">0</span>
+      </span>
+      <span class="badge bg-info px-3 py-2">
+        <i class="bi bi-collection me-1"></i>Total: <span id="total_count">0</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Right Side - Camera Controls -->
+  <div class="col-md-6">
+    <div class="d-flex align-items-center justify-content-end">
+      <div class="me-3 flex-grow-1" style="max-width: 250px;">
+        <label for="cameraSelect" class="form-label visually-hidden">Choose Camera</label>
+        <select id="cameraSelect" class="form-select">
+          <option value="">Select Camera</option>
+          <!-- camera options populated by JS -->
+        </select>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="startCameraBtn">
+          <i class="bi bi-camera me-1"></i>Open
+        </button>
+        <button class="btn btn-outline-secondary" id="closeCameraBtn" style="display:none;">
+          <i class="bi bi-x-circle me-1"></i>Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Three-column layout -->
+<div class="three-column-layout">
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div class="card h-100">
+      <div class="card-body d-flex flex-column">
+        <!-- Image Upload Section -->
+        <div class="mb-4">
+          <h6 class="fw-semibold text-center mb-3">Image Upload</h6>
+          <div class="d-grid">
+            <input type="file" id="upload-image" accept="image/*" class="d-none" onchange="handleImageUpload(event)">
+            <button class="btn btn-outline-primary" onclick="document.getElementById('upload-image').click()">
+              <i class="bi bi-upload me-2"></i>Upload Image
+            </button>
+          </div>
+        </div>
+        
+        <!-- Job No Dropdown -->
+        <div class="mb-3">
+          <label for="job_no" class="form-label fw-semibold mb-1">Job Number</label>
+          <select id="job_no" class="form-select">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+        
+        <!-- Item Code Dropdown -->
+        <div class="mb-4">
+          <label for="itemcode" class="form-label fw-semibold mb-1">Item Code</label>
+          <select id="itemcode" class="form-select" disabled>
+            <option value="">Select Job No first</option>
+          </select>
+        </div>
+        
+        <!-- OCR Loading Indicator -->
+        <div id="ocr-loading" class="d-none mb-4">
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+          </div>
+          <small class="text-muted d-block text-center mt-2">Processing OCR...</small>
+        </div>
+        
+        <!-- OCR Output Section -->
+        <div class="mt-auto">
+          <h6 class="fw-semibold text-center mb-3">OCR Results</h6>
+          <div class="bg-light p-3 rounded">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Identified HUID:</strong>
+              <span id="unique_number" class="badge bg-primary bg-opacity-10 text-primary">-</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>Actual HUID:</strong>
+              <span id="actual_huid" class="badge bg-primary bg-opacity-10 text-primary">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Center Panel - Camera View -->
+  <div class="center-panel">
+    <div class="card camera-container">
+      <div class="d-flex justify-content-center">
+        <video id="camera" width="100%" autoplay muted style="display:none; border-radius: 8px;"></video>
+        <canvas id="snapshot" style="display:none;"></canvas>
+      </div>
+      <div id="camera-placeholder" class="text-muted">Camera not active</div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="card">
+      <div class="card-body preview-container">
+        <div class="preview-card">
+          <div class="card-header">
+            Current Capture
+            <span id="current-stage-badge" class="badge badge-before">Stage-1</span>
+          </div>
+          <div class="w-100" style="max-height: 300px;">
+            <img id="current-preview" class="img-fluid img-thumbnail rounded w-100" style="display: none;" />
+            <div id="no-preview" class="text-muted border rounded p-5" style="height: 30vh;">No image captured yet</div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="captureFrameBtn">Capture</button>
+          <button class="btn btn-primary" id="saveBtn" onclick="saveCurrentStage()">Save</button>
+          <button class="btn btn-primary" id="saveAllBtn" onclick="saveAllData()">Save All</button>
+          <button class="btn btn-primary" id="refreshBtn" onclick="resetAll()">Refresh</button>
+          <button class="btn btn-primary" id="retakeBtn" onclick="retake()">Retake</button>
+          <!-- <button class="btn btn-primary" id="nextStageBtn" onclick="nextStage()">Next Step</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ url_for('static', filename='capture.js') }}"></script>
+{% endblock %}

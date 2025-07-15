@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manufacture Capture App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --success-color: #4cc9f0;
+    --warning-color: #f8961e;
+    --danger-color: #f72585;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --text-light: #f8f9fa;
+    --text-dark: #212529;
+    --card-bg: #ffffff;
+    --body-bg: #f5f7fa;
+    --navbar-bg: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+    --title-bg: linear-gradient(135deg, #f8961e 0%, #f3722c 100%);
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--body-bg);
+    transition: all 0.4s ease;
+    color: var(--text-dark);
+  }
+
+  body.dark-mode {
+    --body-bg: #121212;
+    --card-bg: #1e1e1e;
+    --text-dark: #e0e0e0;
+    --text-light: #f5f5f5;
+    --navbar-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-color: var(--body-bg);
+    color: var(--text-light);
+  }
+
+  body.dark-mode .card,
+  body.dark-mode .modal-content {
+    background-color: var(--card-bg);
+    border-color: #333;
+  }
+
+  .navbar-custom {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    background: var(--navbar-bg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: auto;
+    padding: 0 25px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-left {
+    justify-content: flex-start;
+  }
+
+  .navbar-right {
+    justify-content: flex-end;
+  }
+
+  .navbar-center {
+    flex-grow: 1;
+    background: var(--title-bg);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .menu-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .preview-dropdown {
+    width: 280px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
+  }
+
+  .preview-card {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+
+  .preview-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-card .card-header {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-link-custom {
+    color: white !important;
+    font-weight: 500;
+    padding: 8px 15px !important;
+    border-radius: 8px;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link-custom:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
+  }
+
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  .dropdown-menu {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    background-color: var(--card-bg);
+  }
+
+  .dropdown-item {
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .container-fluid {
+    padding-top: 90px;
+  }
+
+  /* Modern badge styles */
+  .badge-modern {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .navbar-left,
+    .navbar-right {
+      width: auto;
+      padding: 0 15px;
+    }
+    .navbar-center {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .navbar-custom {
+      flex-direction: column;
+      height: auto;
+    }
+    .navbar-center {
+      order: -1;
+      width: 100%;
+      padding: 10px;
+    }
+    .navbar-left,
+    .navbar-right {
+      width: 100%;
+      justify-content: center;
+      padding: 10px;
+    }
+    .container-fluid {
+      padding-top: 150px;
+    }
+  }
+    /* Add these styles for the dropdown cards */
+  .stage-card {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .stage-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .preview-dropdown .card-header {
+    padding: 10px 12px;
+    font-weight: 500;
+  }
+  
+  .preview-dropdown .card-body {
+    padding: 8px 12px;
+  }
+
+</style>
+</head>
+<body>
+<nav class="navbar-custom fixed-top">
+  <!-- Left Side: Menu Button -->
+<!-- Left Side: Menu Button -->
+<div class="navbar-left">
+  <div class="d-flex align-items-center gap-3">
+    <div class="dropdown">
+      <button class="menu-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-grid-fill me-2"></i>
+        <span>Menu</span>
+      </button>
+      <ul class="dropdown-menu preview-dropdown p-2" style="min-width: 250px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: none;">
+        <li class="mb-2">
+          <div id="menu-stage1" class="card preview-card stage-card" onclick="selectStage('Stage1')">
+            <div class="card-header bg-primary text-white d-flex align-items-center" style="border-radius: 6px 6px 0 0;">
+              <i class="bi bi-1-circle-fill me-2"></i>
+              <span>Stage-1</span>
+            </div>
+            <div class="card-body p-2 bg-light">
+              <small class="text-muted">Initial processing stage</small>
+            </div>
+          </div>
+        </li>
+        <li class="mb-2">
+          <div id="menu-stage2" class="card preview-card stage-card" onclick="selectStage('QC')">
+            <div class="card-header bg-success text-white d-flex align-items-center" style="border-radius: 6px 6px 0 0;">
+              <i class="bi bi-2-circle-fill me-2"></i>
+              <span>Stage-2</span>
+            </div>
+            <div class="card-body p-2 bg-light">
+              <small class="text-muted">Quality control checks</small>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div id="menu-stage3" class="card preview-card stage-card" onclick="selectStage('Weighing')">
+            <div class="card-header bg-warning text-dark d-flex align-items-center" style="border-radius: 6px 6px 0 0;">
+              <i class="bi bi-3-circle-fill me-2"></i>
+              <span>Stage-3</span>
+            </div>
+            <div class="card-body p-2 bg-light">
+              <small class="text-muted">Final weighing process</small>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <a href="{{ url_for('main.index') }}" class="nav-link-custom">
+      <i class="bi bi-house-door-fill me-1"></i> Home
+    </a>
+  </div>
+</div>
+
+  <!-- Center Title -->
+  <div class="navbar-center">
+    <span>HALLMARKING IMAGE TRACKER</span>
+  </div>
+
+  <!-- Right Side: List Links + User Dropdown -->
+  <div class="navbar-right">
+    <ul class="navbar-nav flex-row align-items-center mb-0">
+      <li class="nav-item">
+        <a class="nav-link-custom" href="{{ url_for('main.list_records') }}">
+          <i class="bi bi-list-ul me-1"></i> List
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link-custom" href="{{ url_for('main.excel_upload') }}">
+          <i class="bi bi-upload me-1"></i> Excel
+        </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link-custom dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="d-flex align-items-center">
+            <div class="user-avatar">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <span>
+              {% if session.get('user_email') %}
+                {{ session['user_email'].split('@')[0]|capitalize }}
+              {% else %}
+                User
+              {% endif %}
+            </span>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right me-2"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Content with padding for fixed navbar -->
+<div class="container-fluid">
+  {% block content %}{% endblock %}
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to log out?</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS dependencies -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+  // Dark mode toggle
+  const switchToggle = document.getElementById('darkModeSwitch');
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    if(switchToggle) switchToggle.checked = true;
+  }
+  if(switchToggle) {
+    switchToggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode', switchToggle.checked);
+      localStorage.setItem('darkMode', switchToggle.checked);
+    });
+  }
+
+  // Add smooth hover effects
+  document.querySelectorAll('.nav-link-custom, .menu-button').forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      link.style.transform = 'translateY(-2px)';
+    });
+    link.addEventListener('mouseleave', () => {
+      link.style.transform = 'translateY(0)';
+    });
+  });
+</script>
+</body>
+</html>

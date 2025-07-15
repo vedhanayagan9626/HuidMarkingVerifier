@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | HUID Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #f8fafc;
+            --text-color: #1e293b;
+            --light-gray: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .auth-container {
+            max-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem 0;
+        }
+        
+        .auth-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 450px; /* Reduced from full column width */
+            margin: 0 auto; /* Center the card */
+        }
+        
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .auth-header {
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .auth-logo {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .auth-title {
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .auth-subtitle {
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .auth-body {
+            padding: 1.75rem;
+            background-color: white;
+        }
+        
+        .form-control {
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            padding-left: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .btn-auth {
+            height: 50px;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background-color: var(--primary-color);
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-auth:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
+        }
+        
+        .auth-footer a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .auth-footer a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #94a3b8;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .divider::before {
+            margin-right: 1rem;
+        }
+        
+        .divider::after {
+            margin-left: 1rem;
+        }
+        
+        .password-toggle {
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-strength {
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 1rem;
+            }
+            
+            .auth-body {
+                padding: 1.5rem;
+            }
+        }
+        .mb-4 {
+            margin-bottom: 1rem !important; /* Reduced spacing */
+        }
+        
+        .mb-3 {
+            margin-bottom: 0.75rem !important; /* Reduced spacing */
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-5">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <img src="{{ url_for('static', filename='elements/goldLogo.png') }}" alt="Logo" class="auth-logo">
+                            <h1 class="auth-title">Create Account</h1>
+                            <p class="auth-subtitle">Join us today</p>
+                        </div>
+                        <div class="auth-body">
+                            <form id="signupForm">
+                                <div class="mb-4">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <div class="password-container">
+                                        <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+                                        <i class="bi bi-eye-fill password-toggle" id="togglePassword"></i>
+                                    </div>
+                                    <div class="password-strength">
+                                        <div class="password-strength-bar" id="passwordStrength"></div>
+                                    </div>
+                                    <small class="text-muted">Use 8+ characters with a mix of letters, numbers & symbols</small>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                    <div class="password-container">
+                                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+                                        <i class="bi bi-eye-fill password-toggle" id="toggleConfirmPassword"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                    <label class="form-check-label" for="termsCheck">
+                                        I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-auth w-100 mb-3">
+                                    <i class="bi bi-person-plus-fill me-2"></i> Sign Up
+                                </button>
+                                
+                                <div id="signupMessage" class="alert d-none"></div>
+                                
+                                <div class="divider">or</div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="bi bi-google me-2"></i> Continue with Google
+                                    </button>
+                                </div>
+                                
+                                <div class="auth-footer">
+                                    Already have an account? <a href="{{ url_for('main.login_page') }}">Login here</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+        
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmInput = document.getElementById('confirmPassword');
+            const type = confirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmInput.setAttribute('type', type);
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+        
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const strengthBar = document.getElementById('passwordStrength');
+            const password = this.value;
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            
+            // Complexity checks
+            if (/[A-Z]/.test(password)) strength += 15;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+            
+            // Update strength bar
+            strengthBar.style.width = strength + '%';
+            
+            // Update color based on strength
+            if (strength < 50) {
+                strengthBar.style.backgroundColor = '#ef4444'; // red
+            } else if (strength < 75) {
+                strengthBar.style.backgroundColor = '#f59e0b'; // yellow
+            } else {
+                strengthBar.style.backgroundColor = '#10b981'; // green
+            }
+        });
+        
+        // Handle form submission
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageElement = document.getElementById('signupMessage');
+            
+            messageElement.classList.add('d-none');
+            
+            // Basic validation
+            if (password !== confirmPassword) {
+                messageElement.textContent = 'Passwords do not match!';
+                messageElement.classList.remove('d-none');
+                messageElement.classList.add('alert-warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageElement.textContent = 'Account created successfully! Redirecting...';
+                    messageElement.classList.remove('d-none', 'alert-warning', 'alert-danger');
+                    messageElement.classList.add('alert-success');
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/login';
+                    }, 2000);
+                } else {
+                    messageElement.textContent = data.error || 'Signup failed. Please try again.';
+                    messageElement.classList.remove('d-none');
+                    messageElement.classList.add('alert-danger');
+                }
+            } catch (error) {
+                messageElement.textContent = 'An error occurred. Please try again later.';
+                messageElement.classList.remove('d-none');
+                messageElement.classList.add('alert-danger');
+                console.error('Signup error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
